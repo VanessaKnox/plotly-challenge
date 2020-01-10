@@ -1,12 +1,10 @@
  // @TODO: Complete the following function that builds the metadata panel
  function buildMetadata(sample) {
-
+  var Metadatasample = d3.select("#sample-metadata");
   // Use d3 to select the panel with id of `#sample-metadata`
+  // Use `.html("") to clear any existing metadata
     d3.json(`/metadata/${sample}`).then(function (data) {
-      var Metadatasample = d3.select("#sample-metadata");
-
-    // Use `.html("") to clear any existing metadata
-    Metadatasample.html("");
+      Metadatasample.html("");
 
     // Use `Object.entries` to add each key and value pair to the panel
     // Hint: Inside the loop, you will need to use d3 to append new
@@ -15,82 +13,82 @@
       var li = Metadatasample.append("li").text(`${key}:${value}`);
     });
   });
+
+
     // BONUS: Build the Gauge Chart
-    if(key === "WFREQ") {
-      buildGauge(data.WFREQ);
+    // if(key === "WFREQ") {
+    // //buildGauge(data.WFREQ);
 }
 
-function buildCharts(sample) {
 
   // @TODO: Use `d3.json` to fetch the sample data for the plots
-  var url = '/samples/${sample}';
-  d3.json(`/samples/${sample}`)
-  .then(
-    function (response) {
 
-      var bubbleChartData = [{
-        x: response.otu_ids,
-        y: response.sample_values,
-        mode: "markers",
-        type: "scatter",
-        marker: {
-          size: response.sample_values,
-          color: response.otu_ids
-        }
-      }];
-
-      var bubbleChartLayout = {
-        xaxis: { title: "OUT ID" },
-        showlegend: false
-      };
-
-      Plotly.newPlot("bubble", bubbleChartData, bubbleChartLayout);
-   
-      // @TODO: Build a Bubble Chart using the sample data
-
-    // @TODO: Build a Pie Chart
+  // @TODO: Build a Pie Chart
     // HINT: You will need to use slice() to grab the top 10 sample_values,
     // otu_ids, and labels (10 each).
 
 
-  var pieChartData = [{
-          values: alldata.sample_values.slice(1, 10),
-          labels: alldata.otu_ids.slice(0, 10),
-          hovertext: alldata.otu_labels.slice(0,10),
-          hoverlink: "hovertext",
-          type: "pie"
-        }];
+function buildCharts(sample) {
+  function pieChart(data) {
+    console.log(data);
+    let labels = data.otu_ids.slice(0,10);
+    let values = data.sample_values.slice(0,10);
+    let hovertext = data.otu_labels.slice(0,10);
 
-        var pieChartLayout = {
-          height: 600,
-          width: 800
-        };
+    let trace = [{
+      values : values,
+      labels : labels,
+      type : "pie",
+      textposition: "inside",
+      hovertext : hovertext
+    }];
 
-        Plotly.newPlot("pie", pieChartData, pieChartLayout);
+    let layout = {
+        title: '<b> Belly Button Pie Chart </b>',
+        plot_bgcolor: 'rgba(0, 0, 0, 0)',
+        paper_bgcolor: 'rgba(0, 0, 0, 0)',
+    };
 
-// @TODO: Build a Bubble Chart using the sample data
-var bubbleData = {
-  x: alldata.otu_ids,
-  y: alldata.sample_values,
-  text: alldata.otu_labels,        
-  mode:'markers',
-  marker: { 
-    size: alldata.sample_values,
-    color: alldata.otu_ids,
-    colorscale: "Purples"
-  }
-};
-
-var bubbleLayout = {
-  margin: { t: 0 },
-  hovermode: "closests",
-  xaxis: { title: "OTU ID"}
+    Plotly.newPlot('pie', trace , layout, {responsive: true});
 }
 
-var data = [bubbleData];
-var layout = [bubbleLayout];
-Plotly.plot("bubble", data, layout); 
+// @TODO: Build a Bubble Chart using the sample data
+ // HINT: You will need to use slice() to grab the top 10 sample_values,
+    // otu_ids, and labels (10 each)
 
+function bubbleChart(data) {
+  let x = data.otu_ids;
+  let y = data.sample_values;
+  let markersize = data.sample_values;
+  let markercolors = data.otu_ids;
+  let textvalues = data.otu_labels;
+
+  let trace =[{
+    x: x,
+    y: y,
+    mode: 'markers',
+    marker: {
+      size: markersize,
+      color: markercolors,
+    },
+    text: textvalues
+  }];
+
+  let layout ={
+    title:"<b> Belly Button Bubble Chart </b>",
+    xaxis: {
+      title: 'OTU ID',
+    },
+    yaxis: {
+      title: 'Sample Value'
+    },
+    width:1100,
+    plot_bgcolor: 'rgba(0, 0, 0, 0)',
+    paper_bgcolor: 'rgba(0, 0, 0, 0)',
+  };
+
+  Plotly.newPlot('bubble', trace, layout, {responsive: true});
+}
 
 
 function init() {
@@ -122,4 +120,4 @@ function optionChanged(newSample) {
 // Initialize the dashboard
 init();
 
-
+}
