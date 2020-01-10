@@ -29,6 +29,7 @@ function BuildCharts(sample) {
 
   // @TODO: Use `d3.json` to fetch the sample data for the plots
   d3.json(`/samples/${sample}`).then((data) => {
+    console.log(data);
 
     let otu_ids = data.otu_ids;
     let otu_labels = data.otu_labels;
