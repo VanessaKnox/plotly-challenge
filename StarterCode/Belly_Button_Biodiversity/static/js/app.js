@@ -1,9 +1,7 @@
-function buildMetadata(sample) {
+ // @TODO: Complete the following function that builds the metadata panel
+ function buildMetadata(sample) {
 
-  // @TODO: Complete the following function that builds the metadata panel
-
-  // Use `d3.json` to fetch the metadata for a sample
-    // Use d3 to select the panel with id of `#sample-metadata`
+  // Use d3 to select the panel with id of `#sample-metadata`
     d3.json(`/metadata/${sample}`).then(function (data) {
       var Metadatasample = d3.select("#sample-metadata");
 
@@ -18,12 +16,14 @@ function buildMetadata(sample) {
     });
   });
     // BONUS: Build the Gauge Chart
-    // buildGauge(data.WFREQ);
+    if(key === "WFREQ") {
+      buildGauge(data.WFREQ);
 }
 
 function buildCharts(sample) {
 
   // @TODO: Use `d3.json` to fetch the sample data for the plots
+  var url = '/samples/${sample}';
   d3.json(`/samples/${sample}`)
   .then(
     function (response) {
@@ -51,10 +51,13 @@ function buildCharts(sample) {
     // @TODO: Build a Pie Chart
     // HINT: You will need to use slice() to grab the top 10 sample_values,
     // otu_ids, and labels (10 each).
-}
+
+
   var pieChartData = [{
-          values: response.sample_values.slice(1, 10),
-          labels: response.otu_ids.slice(0, 10),
+          values: alldata.sample_values.slice(1, 10),
+          labels: alldata.otu_ids.slice(0, 10),
+          hovertext: alldata.otu_labels.slice(0,10),
+          hoverlink: "hovertext",
           type: "pie"
         }];
 
@@ -64,9 +67,31 @@ function buildCharts(sample) {
         };
 
         Plotly.newPlot("pie", pieChartData, pieChartLayout);
-      }
-    )
+
+// @TODO: Build a Bubble Chart using the sample data
+var bubbleData = {
+  x: alldata.otu_ids,
+  y: alldata.sample_values,
+  text: alldata.otu_labels,        
+  mode:'markers',
+  marker: { 
+    size: alldata.sample_values,
+    color: alldata.otu_ids,
+    colorscale: "Purples"
+  }
 };
+
+var bubbleLayout = {
+  margin: { t: 0 },
+  hovermode: "closests",
+  xaxis: { title: "OTU ID"}
+}
+
+var data = [bubbleData];
+var layout = [bubbleLayout];
+Plotly.plot("bubble", data, layout); 
+
+
 
 function init() {
   // Grab a reference to the dropdown select element
@@ -96,3 +121,5 @@ function optionChanged(newSample) {
 
 // Initialize the dashboard
 init();
+
+
